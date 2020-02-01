@@ -38,7 +38,7 @@ protected:
 
 	void EvaluateCombat();
 
-	void Strike();
+	void Attack();
 
 public:
 
@@ -49,4 +49,6 @@ public:
 	AFighter* GetOpponent();
 
 	EFighterState GetFighterState();
+
+	void AttackFinished();
 };

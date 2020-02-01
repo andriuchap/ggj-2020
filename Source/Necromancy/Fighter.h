@@ -47,4 +47,6 @@ public:
 	int GetTotalConstitution();
 	int GetTotalDexterity();
 	int GetTotalIntelligence();
+
+	void Attack();
 };

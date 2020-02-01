@@ -14,9 +14,17 @@ void AFighterController::MoveTowardOpponent()
 {
 	if (Opponent)
 	{
-		MoveToActor(Opponent, 75.0F);
-		FighterState = EFighterState::FS_MovingToOpponent;
-		SetFocus(Opponent);
+		EPathFollowingRequestResult::Type MoveResult = MoveToActor(Opponent, 75.0F);
+		//UE_LOG(LogTemp, Warning, TEXT("Distance! %f"), DistanceToOpponent);
+		if(MoveResult == EPathFollowingRequestResult::RequestSuccessful)
+		{
+			FighterState = EFighterState::FS_MovingToOpponent;
+			SetFocus(Opponent);
+		}
+		else
+		{
+			Reposition();
+		}
 	}
 }
 
@@ -43,9 +51,15 @@ void AFighterController::EvaluateCombat()
 		if (FighterState == EFighterState::FS_Idle)
 		{
 			// Move towards the opponent
+			UE_LOG(LogTemp, Warning, TEXT("Distance! %f"), DistanceToOpponent);
 			if (DistanceToOpponent > 75.0F)
 			{
 				MoveTowardOpponent();
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Repositioning!"));
+				Reposition();
 			}
 		}
 
@@ -63,15 +77,15 @@ void AFighterController::EvaluateCombat()
 				if (FighterState == EFighterState::FS_MovingToOpponent)
 				{
 					// Was moving to opponent
-					/*float ChanceToAttack = FMath::FRand();
+					float ChanceToAttack = FMath::FRand();
 					if (ChanceToAttack > 0.5F)
 					{
-						Strike();
+						Attack();
 					}
 					else
-					{*/
+					{
 						Reposition();
-					//}
+					}
 
 				}
 				else if (FighterState == EFighterState::FS_Repositioning)
@@ -88,9 +102,22 @@ void AFighterController::EvaluateCombat()
 	}
 }
 
-void AFighterController::Strike()
+void AFighterController::Attack()
 {
 	// Play animation
+	AFighter* Fighter = Cast<AFighter>(GetPawn());
+	if (Fighter)
+	{
+		Fighter->Attack();
+		SetFocus(Opponent);
+		FighterState = EFighterState::FS_Striking;
+	}
+}
+
+void AFighterController::AttackFinished()
+{
+	FighterState = EFighterState::FS_Idle;
+	UE_LOG(LogTemp, Warning, TEXT("AttackFinished!"));
 }
 
 void AFighterController::Tick(float DeltaSeconds)

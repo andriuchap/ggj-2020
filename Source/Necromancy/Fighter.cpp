@@ -5,6 +5,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "BodyPartMeshComponent.h"
 #include "BodyPartData.h"
+#include "ZombieAnimInstance.h"
 
 // Sets default values
 AFighter::AFighter(const FObjectInitializer &ObjInitializer)
@@ -127,4 +128,13 @@ int AFighter::GetTotalIntelligence()
 		}
 	}
 	return Sum;
+}
+
+void AFighter::Attack()
+{
+	UZombieAnimInstance* AnimInstance = Cast<UZombieAnimInstance>(HeadMesh->GetAnimInstance());
+	if (AnimInstance)
+	{
+		AnimInstance->StartAttack();
+	}
 }

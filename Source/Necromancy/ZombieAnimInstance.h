@@ -13,5 +13,13 @@ UCLASS()
 class NECROMANCY_API UZombieAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
-	
+public:
+	UZombieAnimInstance(const FObjectInitializer &ObjInitializer);
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Zombie")
+	TArray<class UAnimMontage*> AttackAnimations;
+
+public:
+	void StartAttack();
 };
