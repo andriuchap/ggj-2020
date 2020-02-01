@@ -10,4 +10,7 @@ UBodyPartData::UBodyPartData(const FObjectInitializer &ObjInitializer)
 	Dexterity = 0;
 	Constitution = 0;
 	Intelligence = 0;
+
+	Mesh = nullptr;
+	Material = nullptr;
 }

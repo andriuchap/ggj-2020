@@ -26,4 +26,9 @@ public:
 		int Constitution;
 	UPROPERTY(EditAnywhere, Category = "Body parts")
 		int Intelligence;
+
+	UPROPERTY(EditAnywhere, Category = "Body parts")
+		class USkeletalMesh* Mesh;
+	UPROPERTY(EditAnywhere, Category = "Body parts")
+		class UMaterialInterface* Material;
 };
