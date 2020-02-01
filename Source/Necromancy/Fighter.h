@@ -20,16 +20,22 @@ protected:
 		class UBodyPartMeshComponent* HeadMesh;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Body parts")
-		class UBodyPartMeshComponent* BodyMesh;
+		UBodyPartMeshComponent* BodyMesh;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Body parts")
-		class UBodyPartMeshComponent* LeftArmMesh;
+		UBodyPartMeshComponent* LeftArmMesh;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Body parts")
-		class UBodyPartMeshComponent* RightArmMesh;
+		UBodyPartMeshComponent* RightArmMesh;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Body parts")
-		class UBodyPartMeshComponent* LegsMesh;
+		UBodyPartMeshComponent* LegsMesh;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Weapon")
+		class UStaticMeshComponent* WeaponMesh;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	class UWeaponData* WeaponData;
 
 	TArray<UBodyPartMeshComponent*> BodyParts;
 
@@ -49,4 +55,6 @@ public:
 	int GetTotalIntelligence();
 
 	void Attack();
+
+	void EquipWeapon(UWeaponData* InWeaponData);
 };

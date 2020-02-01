@@ -18,7 +18,7 @@ public:
 	UBodyPartMeshComponent(const FObjectInitializer &ObjInitializer);
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Body part")
+	UPROPERTY(EditAnywhere, Category = "Body part")
 	class UBodyPartData* Data;
 
 public:
