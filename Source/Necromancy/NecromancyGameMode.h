@@ -12,7 +12,7 @@ class ANecromancyGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
-	ANecromancyGameMode();
+	ANecromancyGameMode(const FObjectInitializer &ObjInitializer);
 };
 
 

@@ -5,7 +5,7 @@
 #include "NecromancyCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
-ANecromancyGameMode::ANecromancyGameMode()
+ANecromancyGameMode::ANecromancyGameMode(const FObjectInitializer &ObjInitializer)
 	: Super()
 {
 	// set default pawn class to our Blueprinted character
