@@ -6,6 +6,8 @@
 #include "BodyPartMeshComponent.h"
 #include "BodyPartData.h"
 #include "ZombieAnimInstance.h"
+#include "Components/StaticMeshComponent.h"
+#include "WeaponData.h"
 
 // Sets default values
 AFighter::AFighter(const FObjectInitializer &ObjInitializer)
@@ -57,13 +59,22 @@ AFighter::AFighter(const FObjectInitializer &ObjInitializer)
 	BodyParts.Add(LeftArmMesh);
 	BodyParts.Add(RightArmMesh);
 	BodyParts.Add(LegsMesh);
+
+	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
+	WeaponMesh->SetCollisionProfileName(FName("NoCollision"));
+	WeaponMesh->SetGenerateOverlapEvents(true);
+	WeaponMesh->SetVisibility(false);
 }
 
 // Called when the game starts or when spawned
 void AFighter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	WeaponMesh->AttachToComponent(RightArmMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, FName("Item_R"));
+
 	RefreshAppearance();
+	EquipWeapon(WeaponData);
 }
 
 // Called every frame
@@ -137,4 +148,17 @@ void AFighter::Attack()
 	{
 		AnimInstance->StartAttack();
 	}
+}
+
+void AFighter::EquipWeapon(UWeaponData * InWeaponData)
+{
+	WeaponData = InWeaponData;
+	WeaponMesh->SetStaticMesh(WeaponData->WeaponMesh);
+	if (WeaponData->WeaponMaterial)
+	{
+		WeaponMesh->SetMaterial(0, WeaponData->WeaponMaterial);
+	}
+
+	WeaponMesh->SetVisibility(true);
+	WeaponMesh->SetCollisionProfileName(FName("OverlapAllDynamic"));
 }
