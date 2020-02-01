@@ -23,7 +23,7 @@ void AFighterController::MoveTowardOpponent()
 		}
 		else
 		{
-			Reposition();
+			AttackOrReposition();
 		}
 	}
 }
@@ -77,15 +77,7 @@ void AFighterController::EvaluateCombat()
 				if (FighterState == EFighterState::FS_MovingToOpponent)
 				{
 					// Was moving to opponent
-					float ChanceToAttack = FMath::FRand();
-					if (ChanceToAttack > 0.5F)
-					{
-						Attack();
-					}
-					else
-					{
-						Reposition();
-					}
+					AttackOrReposition();
 
 				}
 				else if (FighterState == EFighterState::FS_Repositioning)
@@ -99,6 +91,19 @@ void AFighterController::EvaluateCombat()
 			}
 			PreviousPathStatus = PathStatus;
 		}
+	}
+}
+
+void AFighterController::AttackOrReposition()
+{
+	float ChanceToAttack = FMath::FRand();
+	if (ChanceToAttack > 0.5F)
+	{
+		Attack();
+	}
+	else
+	{
+		Reposition();
 	}
 }
 

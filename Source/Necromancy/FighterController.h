@@ -38,6 +38,8 @@ protected:
 
 	void EvaluateCombat();
 
+	void AttackOrReposition();
+
 	void Attack();
 
 public:
