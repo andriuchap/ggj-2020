@@ -29,6 +29,7 @@ public:
 public:
 
 	UBodyPartData* GetBodyPartData();
+	void SetBodyPartData(UBodyPartData* InData);
 
 	void RefreshMesh();
 

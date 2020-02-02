@@ -54,6 +54,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void SetPart(const FBodyPart& Part);
+
 	void ResetParts();
 
 	int GetTotalStrength();

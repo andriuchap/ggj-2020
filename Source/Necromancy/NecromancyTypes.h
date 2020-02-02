@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NecromancyTypes.generated.h"
 
 UENUM(BlueprintType)
 enum class EBodyPartSlot : uint8
@@ -20,4 +21,18 @@ enum class EDamageResult : uint8
 	DR_DamageDealt,
 	DR_Blocked,
 	DR_LethalDamage
+};
+
+USTRUCT(BlueprintType)
+struct FBodyPart
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(BlueprintReadOnly, Category = "Body part")
+	class UBodyPartData* Data;
+	UPROPERTY(BlueprintReadOnly, Category = "Body part")
+	float Health;
+
+	FBodyPart() : Data(NULL), Health(0) {}
+	FBodyPart(UBodyPartData* InData);
 };

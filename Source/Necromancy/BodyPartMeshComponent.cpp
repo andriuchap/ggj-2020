@@ -17,6 +17,11 @@ UBodyPartData * UBodyPartMeshComponent::GetBodyPartData()
 	return Data;
 }
 
+void UBodyPartMeshComponent::SetBodyPartData(UBodyPartData * InData)
+{
+	Data = InData;
+}
+
 void UBodyPartMeshComponent::RefreshMesh()
 {
 	if (Data)

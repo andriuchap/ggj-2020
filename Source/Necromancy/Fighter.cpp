@@ -108,6 +108,32 @@ void AFighter::Tick(float DeltaTime)
 
 }
 
+void AFighter::SetPart(const FBodyPart& Part)
+{
+	UBodyPartMeshComponent* PartMesh = nullptr;
+	switch (Part.Data->Slot)
+	{
+	case EBodyPartSlot::BPS_Body:
+		PartMesh = BodyMesh;
+		break;
+	case EBodyPartSlot::BPS_Head:
+		PartMesh = HeadMesh;
+		break;
+	case EBodyPartSlot::BPS_Legs:
+		PartMesh = LegsMesh;
+		break;
+	case EBodyPartSlot::BPS_LArm:
+		PartMesh = LeftArmMesh;
+		break;
+	case EBodyPartSlot::BPS_RArm:
+		PartMesh = RightArmMesh;
+		break;
+	}
+	PartMesh->SetBodyPartData(Part.Data);
+	PartMesh->RefreshMesh();
+	PartMesh->BodyPartHealth = Part.Health;
+}
+
 void AFighter::ResetParts()
 {
 	for (int i = 0; i < BodyParts.Num(); i++)
@@ -221,7 +247,12 @@ EDamageResult AFighter::ReceiveDamage(float InAmount)
 	ReceiveDamageToRandomPart(InAmount);
 	if (Health <= 0.0F)
 	{
-		Destroy();
+		RootComponent->SetVisibility(false, true);
+		AFighterController* FighterController = Cast<AFighterController>(GetController());
+		if (FighterController)
+		{
+			FighterController->SetOpponent(nullptr);
+		}
 		return EDamageResult::DR_LethalDamage;
 	}
 	return EDamageResult::DR_DamageDealt;

@@ -6,6 +6,9 @@
 UBodyPartData::UBodyPartData(const FObjectInitializer &ObjInitializer)
 {
 	Slot = EBodyPartSlot::BPS_Body;
+
+	Name = FText();
+
 	Strength = 0;
 	Dexterity = 0;
 	Constitution = 0;
