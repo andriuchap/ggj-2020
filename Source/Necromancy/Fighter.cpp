@@ -230,14 +230,6 @@ void AFighter::DealDamage(AFighter * OtherFighter)
 	float Fluctuation = FMath::FRandRange(-5.0F, 5.0F);
 	float TotalDamage = FMath::Clamp(BaseDamage + StrengthBonus + Fluctuation, 1.0F, FLT_MAX);
 	EDamageResult DamageResult = OtherFighter->ReceiveDamage(TotalDamage);
-	if (DamageResult == EDamageResult::DR_LethalDamage)
-	{
-		AFighterController* FighterController = Cast<AFighterController>(GetController());
-		if (FighterController)
-		{
-			FighterController->NotifyOpponentDied();
-		}
-	}
 }
 
 EDamageResult AFighter::ReceiveDamage(float InAmount)
@@ -248,11 +240,7 @@ EDamageResult AFighter::ReceiveDamage(float InAmount)
 	if (Health <= 0.0F)
 	{
 		RootComponent->SetVisibility(false, true);
-		AFighterController* FighterController = Cast<AFighterController>(GetController());
-		if (FighterController)
-		{
-			FighterController->SetOpponent(nullptr);
-		}
+		OnFighterDied.Broadcast(this);
 		return EDamageResult::DR_LethalDamage;
 	}
 	return EDamageResult::DR_DamageDealt;

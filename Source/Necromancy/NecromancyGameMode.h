@@ -25,12 +25,16 @@ public:
 	TArray<class AFighter*> Fighters;
 	TArray<FTransform> FighterTransforms;
 
+	int PlayerFighter;
+
 protected:
 	virtual void BeginPlay() override;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Necromancy")
 	void StartFight(class ANecromancerController* Necro);
+
+	void OnFighterDied(AFighter* Fighter);
 };
 
 

@@ -36,9 +36,16 @@ void AFighterController::Reposition()
 	PawnFwd = PawnFwd.RotateAngleAxis(FMath::RandRange(-90.0F, 90.0F), FVector::UpVector);
 	PawnFwd *= FMath::RandRange(100.0F, 250.0F) * -1.0F;
 
-	MoveToLocation(PawnLoc + PawnFwd, 10.0F);
+	EPathFollowingRequestResult::Type MoveResult = MoveToLocation(PawnLoc + PawnFwd, 10.0F);
 
-	FighterState = EFighterState::FS_Repositioning;
+	if (MoveResult == EPathFollowingRequestResult::RequestSuccessful)
+	{
+		FighterState = EFighterState::FS_Repositioning;
+	}
+	else
+	{
+		FighterState = EFighterState::FS_Idle;
+	}
 	SetFocus(Opponent);
 }
 
@@ -125,9 +132,9 @@ void AFighterController::AttackFinished()
 	UE_LOG(LogTemp, Warning, TEXT("AttackFinished!"));
 }
 
-void AFighterController::NotifyOpponentDied()
+void AFighterController::OnOpponentDied(AFighter* Fighter)
 {
-	Opponent = nullptr;
+	SetOpponent(nullptr);
 	FighterState = EFighterState::FS_Idle;
 }
 
@@ -139,8 +146,17 @@ void AFighterController::Tick(float DeltaSeconds)
 
 void AFighterController::SetOpponent(AFighter * InOpponent)
 {
+	if (Opponent)
+	{
+		Opponent->OnFighterDied.RemoveAll(this);
+	}
 	Opponent = InOpponent;
 	SetFocus(Opponent);
+
+	if (Opponent)
+	{
+		Opponent->OnFighterDied.AddUObject(this, &AFighterController::OnOpponentDied);
+	}
 }
 
 AFighter * AFighterController::GetOpponent()

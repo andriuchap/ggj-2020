@@ -6,6 +6,8 @@
 #include "Engine/World.h"
 #include "NecromancyGameMode.h"
 #include "NecromancerPawn.h"
+#include "BodyPartMeshComponent.h"
+#include "Fighter.h"
 
 ANecromancerController::ANecromancerController(const FObjectInitializer &ObjInitializer)
 {
@@ -13,6 +15,8 @@ ANecromancerController::ANecromancerController(const FObjectInitializer &ObjInit
 	bEnableClickEvents = true;
 
 	bShowMouseCursor = true;
+
+	RemainingHealth = 0;
 }
 
 void ANecromancerController::BeginPlay()
@@ -25,12 +29,16 @@ void ANecromancerController::BeginPlay()
 		ANecromancyGameMode* GameMode = Cast<ANecromancyGameMode>(World->GetAuthGameMode());
 		if (GameMode)
 		{
+			int Constitution = 0;
 			for (int i = 0; i < GameMode->StartingBodyParts.Num(); i++)
 			{
 				FBodyPart BodyPart(GameMode->StartingBodyParts[i]);
+				Constitution += BodyPart.Data->Constitution;
 				EquipBodyPart(BodyPart);
 			}
 			EquippedWeapon = GameMode->StartingWeapon;
+
+			RemainingHealth = Constitution * 20.0F;
 		}
 	}	
 }
@@ -111,10 +119,55 @@ TArray<FBodyPart> ANecromancerController::GetLegs()
 
 void ANecromancerController::EquipBodyPart(FBodyPart & InPart)
 {
-	EquppedParts.Add(InPart.Data->Slot, InPart);
+	EquippedParts.Add(InPart.Data->Slot, InPart);
 	ANecromancerPawn* NecroPawn = Cast<ANecromancerPawn>(GetPawn());
 	if (NecroPawn)
 	{
-		NecroPawn->RefreshZombieAppearance(InPart);
+		NecroPawn->RefreshZombieAppearance(InPart.Data->Slot);
+	}
+}
+
+void ANecromancerController::UnequipBodyPart(FBodyPart & InPart)
+{
+	EBodyPartSlot Slot = InPart.Data->Slot;
+	if (EquippedParts[Slot] == InPart)
+	{
+		EquippedParts.Remove(Slot);
+	}
+	AvailableParts.Add(InPart);
+	ANecromancerPawn* NecroPawn = Cast<ANecromancerPawn>(GetPawn());
+	if (NecroPawn)
+	{
+		NecroPawn->RefreshZombieAppearance(InPart.Data->Slot);
+	}
+}
+
+void ANecromancerController::DestroyBodyPart(FBodyPart & InPart)
+{
+	AvailableParts.Remove(InPart);
+}
+
+void ANecromancerController::TransferFighterData(AFighter * Fighter)
+{
+	RemainingHealth = Fighter->Health;
+
+	EvaluateEquippedPart(EBodyPartSlot::BPS_Head, Fighter->HeadMesh);
+	EvaluateEquippedPart(EBodyPartSlot::BPS_Body, Fighter->BodyMesh);
+	EvaluateEquippedPart(EBodyPartSlot::BPS_Legs, Fighter->LegsMesh);
+	EvaluateEquippedPart(EBodyPartSlot::BPS_LArm, Fighter->LeftArmMesh);
+	EvaluateEquippedPart(EBodyPartSlot::BPS_RArm, Fighter->RightArmMesh);
+}
+
+void ANecromancerController::EvaluateEquippedPart(EBodyPartSlot Slot, UBodyPartMeshComponent * MeshComp)
+{
+	if (EquippedParts.Contains(Slot))
+	{
+		FBodyPart& Part = EquippedParts[Slot];
+		Part.Health = MeshComp->BodyPartHealth;
+		if (Part.Health <= 0.0F)
+		{
+			UnequipBodyPart(Part);
+			DestroyBodyPart(Part);
+		}
 	}
 }

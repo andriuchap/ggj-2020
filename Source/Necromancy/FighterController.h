@@ -53,5 +53,5 @@ public:
 	EFighterState GetFighterState();
 
 	void AttackFinished();
-	void NotifyOpponentDied();
+	void OnOpponentDied(AFighter* Fighter);
 };

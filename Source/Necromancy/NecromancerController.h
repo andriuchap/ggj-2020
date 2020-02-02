@@ -19,11 +19,14 @@ public:
 
 	TArray<FBodyPart> AvailableParts;
 
-	TMap<EBodyPartSlot, FBodyPart> EquppedParts;
+	TMap<EBodyPartSlot, FBodyPart> EquippedParts;
 
 	TArray<class UWeaponData*> AvailableWeapons;
 
 	UWeaponData* EquippedWeapon;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Necromancer")
+	float RemainingHealth;
 
 protected:
 	virtual void BeginPlay() override;
@@ -39,4 +42,9 @@ public:
 	TArray<FBodyPart> GetLegs();
 
 	void EquipBodyPart(FBodyPart& InPart);
+	void UnequipBodyPart(FBodyPart& InPart);
+	void DestroyBodyPart(FBodyPart& InPart);
+
+	void TransferFighterData(class AFighter* Fighter);
+	void EvaluateEquippedPart(EBodyPartSlot Slot, class UBodyPartMeshComponent* MeshComp);
 };

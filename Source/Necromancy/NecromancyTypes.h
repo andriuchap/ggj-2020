@@ -35,4 +35,6 @@ public:
 
 	FBodyPart() : Data(NULL), Health(0) {}
 	FBodyPart(UBodyPartData* InData);
+
+	bool operator==(const FBodyPart& Other) { return this->Data == Other.Data && this->Health == Other.Health; }
 };
