@@ -96,6 +96,7 @@ void AFighter::WeaponBeginOverlap(UPrimitiveComponent * OverlappedComponent, AAc
 		AFighter* OtherFighter = Cast<AFighter>(OtherActor);
 		if (OtherFighter)
 		{
+			OnEnemyHit(SweepResult);
 			DealDamage(OtherFighter);
 		}
 	}
@@ -239,7 +240,12 @@ EDamageResult AFighter::ReceiveDamage(float InAmount)
 	ReceiveDamageToRandomPart(InAmount);
 	if (Health <= 0.0F)
 	{
-		RootComponent->SetVisibility(false, true);
+		//RootComponent->SetVisibility(false, true);
+		UZombieAnimInstance* AnimInst = Cast<UZombieAnimInstance>(HeadMesh->GetAnimInstance());
+		if (AnimInst)
+		{
+			AnimInst->Die();
+		}
 		OnFighterDied.Broadcast(this);
 		return EDamageResult::DR_LethalDamage;
 	}

@@ -66,7 +66,7 @@ void ANecromancyGameMode::StartFight(ANecromancerController* Necro)
 
 void ANecromancyGameMode::OnFighterDied(AFighter * Fighter)
 {
-	ANecromancerController* NecroController = nullptr;
+	/*ANecromancerController* NecroController = nullptr;
 	for (TActorIterator<ANecromancerController> Itr(GetWorld()); Itr; ++Itr)
 	{
 		NecroController = *Itr;
@@ -78,5 +78,5 @@ void ANecromancyGameMode::OnFighterDied(AFighter * Fighter)
 		{
 			NecroController->Possess(*Itr);
 		}
-	}
+	}*/
 }

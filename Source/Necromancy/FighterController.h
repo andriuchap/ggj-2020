@@ -13,7 +13,8 @@ enum class EFighterState : uint8
 	FS_MovingToOpponent,
 	FS_Striking,
 	FS_Repositioning,
-	FS_Blocking
+	FS_Blocking,
+	FS_Dead
 };
 
 UCLASS()
@@ -32,6 +33,8 @@ private:
 	EPathFollowingStatus::Type PreviousPathStatus;
 
 protected:
+
+	virtual void BeginPlay() override;
 
 	void MoveTowardOpponent();
 	void Reposition();
@@ -54,4 +57,6 @@ public:
 
 	void AttackFinished();
 	void OnOpponentDied(AFighter* Fighter);
+
+	void OnFighterDied(AFighter* Fighter);
 };

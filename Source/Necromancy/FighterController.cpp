@@ -10,6 +10,17 @@ AFighterController::AFighterController(const FObjectInitializer &ObjInitializer)
 	PreviousPathStatus = EPathFollowingStatus::Idle;
 }
 
+void AFighterController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	AFighter* Fighter = Cast<AFighter>(GetPawn());
+	if (Fighter)
+	{
+		Fighter->OnFighterDied.AddUObject(this, &AFighterController::OnFighterDied);
+	}
+}
+
 void AFighterController::MoveTowardOpponent()
 {
 	if (Opponent)
@@ -136,6 +147,12 @@ void AFighterController::OnOpponentDied(AFighter* Fighter)
 {
 	SetOpponent(nullptr);
 	FighterState = EFighterState::FS_Idle;
+}
+
+void AFighterController::OnFighterDied(AFighter * Fighter)
+{
+	StopMovement();
+	FighterState = EFighterState::FS_Dead;
 }
 
 void AFighterController::Tick(float DeltaSeconds)
