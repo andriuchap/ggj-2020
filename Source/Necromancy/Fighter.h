@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "NecromancyTypes.h"
 #include "Fighter.generated.h"
 
 UCLASS()
@@ -46,24 +47,27 @@ protected:
 	UFUNCTION()
 	void WeaponBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	UFUNCTION()
-	void WeaponEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
 private:
+	float Health;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void RefreshAppearance();
+	void ResetParts();
 
 	int GetTotalStrength();
 	int GetTotalConstitution();
 	int GetTotalDexterity();
 	int GetTotalIntelligence();
 
+	float GetMaxHealth();
+
 	void Attack();
 	void SetEnableWeaponOverlap(bool InNewEnable);
+	void DealDamage(AFighter* OtherFighter);
+	EDamageResult ReceiveDamage(float InAmount);
+	void ReceiveDamageToRandomPart(float InAmount);
 
 	void EquipWeapon(UWeaponData* InWeaponData);
 

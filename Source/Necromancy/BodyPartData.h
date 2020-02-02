@@ -28,6 +28,9 @@ public:
 		int Intelligence;
 
 	UPROPERTY(EditAnywhere, Category = "Body parts")
+		float BodyPartHealth;
+
+	UPROPERTY(EditAnywhere, Category = "Body parts")
 		class USkeletalMesh* Mesh;
 	UPROPERTY(EditAnywhere, Category = "Body parts")
 		class UMaterialInterface* Material;

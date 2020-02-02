@@ -13,3 +13,11 @@ enum class EBodyPartSlot : uint8
 	BPS_RArm,
 	BPS_Legs
 };
+
+UENUM()
+enum class EDamageResult : uint8
+{
+	DR_DamageDealt,
+	DR_Blocked,
+	DR_LethalDamage
+};

@@ -26,7 +26,13 @@ public:
 
 	float BodyPartHealth;
 
+public:
+
 	UBodyPartData* GetBodyPartData();
 
 	void RefreshMesh();
+
+	void ResetPart();
+
+	float ReceiveDamage(float InAmount);
 };

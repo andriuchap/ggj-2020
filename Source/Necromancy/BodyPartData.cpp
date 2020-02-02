@@ -11,6 +11,8 @@ UBodyPartData::UBodyPartData(const FObjectInitializer &ObjInitializer)
 	Constitution = 0;
 	Intelligence = 0;
 
+	BodyPartHealth = 50.0F;
+
 	Mesh = nullptr;
 	Material = nullptr;
 }

@@ -25,3 +25,18 @@ void UBodyPartMeshComponent::RefreshMesh()
 		SetMaterial(0, Data->Material);
 	}
 }
+
+void UBodyPartMeshComponent::ResetPart()
+{
+	BodyPartHealth = Data->BodyPartHealth;
+	RefreshMesh();
+}
+
+float UBodyPartMeshComponent::ReceiveDamage(float InAmount)
+{
+	if (BodyPartHealth > 0.0F)
+	{
+		BodyPartHealth = FMath::Clamp(BodyPartHealth - InAmount, 0.0f, FLT_MAX);
+	}
+	return BodyPartHealth;
+}
