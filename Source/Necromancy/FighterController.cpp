@@ -125,6 +125,12 @@ void AFighterController::AttackFinished()
 	UE_LOG(LogTemp, Warning, TEXT("AttackFinished!"));
 }
 
+void AFighterController::NotifyOpponentDied()
+{
+	Opponent = nullptr;
+	FighterState = EFighterState::FS_Idle;
+}
+
 void AFighterController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);

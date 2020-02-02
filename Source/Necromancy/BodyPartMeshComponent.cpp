@@ -17,6 +17,11 @@ UBodyPartData * UBodyPartMeshComponent::GetBodyPartData()
 	return Data;
 }
 
+void UBodyPartMeshComponent::SetBodyPartData(UBodyPartData * InData)
+{
+	Data = InData;
+}
+
 void UBodyPartMeshComponent::RefreshMesh()
 {
 	if (Data)
@@ -24,4 +29,19 @@ void UBodyPartMeshComponent::RefreshMesh()
 		SetSkeletalMesh(Data->Mesh);
 		SetMaterial(0, Data->Material);
 	}
+}
+
+void UBodyPartMeshComponent::ResetPart()
+{
+	BodyPartHealth = Data->BodyPartHealth;
+	RefreshMesh();
+}
+
+float UBodyPartMeshComponent::ReceiveDamage(float InAmount)
+{
+	if (BodyPartHealth > 0.0F)
+	{
+		BodyPartHealth = FMath::Clamp(BodyPartHealth - InAmount, 0.0f, FLT_MAX);
+	}
+	return BodyPartHealth;
 }

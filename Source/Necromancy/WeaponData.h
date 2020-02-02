@@ -6,22 +6,23 @@
 #include "Engine/DataAsset.h"
 #include "WeaponData.generated.h"
 
-/**
- * 
- */
-UCLASS()
+
+UCLASS(BlueprintType)
 class NECROMANCY_API UWeaponData : public UDataAsset
 {
 	GENERATED_BODY()
 public:
 	UWeaponData(const FObjectInitializer &ObjInitializer);
 
-	UPROPERTY(EditAnywhere, Category = "Weapon")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
+		FText Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
 	float BaseDamage;
 
-	UPROPERTY(EditAnywhere, Category = "Weapon")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
 		class UStaticMesh* WeaponMesh;
 
-	UPROPERTY(EditAnywhere, Category = "Weapon")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
 		class UMaterialInterface* WeaponMaterial;
 };

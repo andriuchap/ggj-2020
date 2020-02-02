@@ -15,20 +15,26 @@ public:
 	UBodyPartData(const FObjectInitializer &ObjInitializer);
 
 public:
-	UPROPERTY(EditAnywhere, Category = "Body parts")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body parts")
 	EBodyPartSlot Slot;
 
-	UPROPERTY(EditAnywhere, Category = "Body parts")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body parts")
+		FText Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body parts")
 		int Strength;
-	UPROPERTY(EditAnywhere, Category = "Body parts")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body parts")
 		int Dexterity;
-	UPROPERTY(EditAnywhere, Category = "Body parts")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body parts")
 		int Constitution;
-	UPROPERTY(EditAnywhere, Category = "Body parts")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body parts")
 		int Intelligence;
 
-	UPROPERTY(EditAnywhere, Category = "Body parts")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body parts")
+		float BodyPartHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body parts")
 		class USkeletalMesh* Mesh;
-	UPROPERTY(EditAnywhere, Category = "Body parts")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Body parts")
 		class UMaterialInterface* Material;
 };

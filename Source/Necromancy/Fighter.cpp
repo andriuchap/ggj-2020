@@ -8,6 +8,7 @@
 #include "ZombieAnimInstance.h"
 #include "Components/StaticMeshComponent.h"
 #include "WeaponData.h"
+#include "FighterController.h"
 
 // Sets default values
 AFighter::AFighter(const FObjectInitializer &ObjInitializer)
@@ -20,20 +21,20 @@ AFighter::AFighter(const FObjectInitializer &ObjInitializer)
 
 	FName CollisionName = FName("CharacterMesh");
 
-	BodyMesh = CreateDefaultSubobject<UBodyPartMeshComponent>(TEXT("BodyMesh"));
-	BodyMesh->SetupAttachment(RootComponent);
-	BodyMesh->Slot = EBodyPartSlot::BPS_Body;
-	//BodyMesh->SetMasterPoseComponent(HeadMesh);
-	BodyMesh->SetCanEverAffectNavigation(false);
-	BodyMesh->SetCollisionProfileName(CollisionName);
-	BodyMesh->SetGenerateOverlapEvents(true);
-
 	HeadMesh = CreateDefaultSubobject<UBodyPartMeshComponent>(TEXT("HeadMesh"));
 	HeadMesh->SetupAttachment(RootComponent);
 	HeadMesh->Slot = EBodyPartSlot::BPS_Head;
 	HeadMesh->SetCanEverAffectNavigation(false);
 	HeadMesh->SetCollisionProfileName(CollisionName);
 	HeadMesh->SetGenerateOverlapEvents(true);
+
+	BodyMesh = CreateDefaultSubobject<UBodyPartMeshComponent>(TEXT("BodyMesh"));
+	BodyMesh->SetupAttachment(RootComponent);
+	BodyMesh->Slot = EBodyPartSlot::BPS_Body;
+	BodyMesh->SetMasterPoseComponent(HeadMesh);
+	BodyMesh->SetCanEverAffectNavigation(false);
+	BodyMesh->SetCollisionProfileName(CollisionName);
+	BodyMesh->SetGenerateOverlapEvents(true);
 
 	LeftArmMesh = CreateDefaultSubobject<UBodyPartMeshComponent>(TEXT("LeftArmMesh"));
 	LeftArmMesh->SetupAttachment(RootComponent);
@@ -60,15 +61,17 @@ AFighter::AFighter(const FObjectInitializer &ObjInitializer)
 	LegsMesh->SetGenerateOverlapEvents(true);
 
 	BodyParts.Add(HeadMesh);
-	BodyParts.Add(BodyMesh);
 	BodyParts.Add(LeftArmMesh);
 	BodyParts.Add(RightArmMesh);
+	BodyParts.Add(BodyMesh);
 	BodyParts.Add(LegsMesh);
 
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
 	WeaponMesh->SetCollisionProfileName(FName("NoCollision"));
 	WeaponMesh->SetGenerateOverlapEvents(false);
 	WeaponMesh->SetVisibility(false);
+
+	Health = 0;
 }
 
 // Called when the game starts or when spawned
@@ -78,26 +81,23 @@ void AFighter::BeginPlay()
 
 	WeaponMesh->AttachToComponent(RightArmMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, FName("Item_R"));
 
-	RefreshAppearance();
+	ResetParts();
 	EquipWeapon(WeaponData);
 
 	WeaponMesh->OnComponentBeginOverlap.AddDynamic(this, &AFighter::WeaponBeginOverlap);
-	WeaponMesh->OnComponentEndOverlap.AddDynamic(this, &AFighter::WeaponEndOverlap);
+
+	Health = GetMaxHealth();
 }
 
 void AFighter::WeaponBeginOverlap(UPrimitiveComponent * OverlappedComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
 	if (OtherActor != this)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Overlapped component %s on Actor %s"), *OtherComp->GetReadableName(), *OtherActor->GetName());
-	}
-}
-
-void AFighter::WeaponEndOverlap(UPrimitiveComponent * OverlappedComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex)
-{
-	if (OtherActor != this)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Ended overlap component %s on Actor %s"), *OtherComp->GetReadableName(), *OtherActor->GetName());
+		AFighter* OtherFighter = Cast<AFighter>(OtherActor);
+		if (OtherFighter)
+		{
+			DealDamage(OtherFighter);
+		}
 	}
 }
 
@@ -108,11 +108,37 @@ void AFighter::Tick(float DeltaTime)
 
 }
 
-void AFighter::RefreshAppearance()
+void AFighter::SetPart(const FBodyPart& Part)
+{
+	UBodyPartMeshComponent* PartMesh = nullptr;
+	switch (Part.Data->Slot)
+	{
+	case EBodyPartSlot::BPS_Body:
+		PartMesh = BodyMesh;
+		break;
+	case EBodyPartSlot::BPS_Head:
+		PartMesh = HeadMesh;
+		break;
+	case EBodyPartSlot::BPS_Legs:
+		PartMesh = LegsMesh;
+		break;
+	case EBodyPartSlot::BPS_LArm:
+		PartMesh = LeftArmMesh;
+		break;
+	case EBodyPartSlot::BPS_RArm:
+		PartMesh = RightArmMesh;
+		break;
+	}
+	PartMesh->SetBodyPartData(Part.Data);
+	PartMesh->RefreshMesh();
+	PartMesh->BodyPartHealth = Part.Health;
+}
+
+void AFighter::ResetParts()
 {
 	for (int i = 0; i < BodyParts.Num(); i++)
 	{
-		BodyParts[i]->RefreshMesh();
+		BodyParts[i]->ResetPart();
 	}
 }
 
@@ -134,8 +160,9 @@ int AFighter::GetTotalConstitution()
 	int Sum = 0;
 	for (int i = 0; i < BodyParts.Num(); i++)
 	{
-		Sum += BodyParts[i]->GetBodyPartData()->Strength;
+		Sum += BodyParts[i]->GetBodyPartData()->Constitution;
 	}
+	UE_LOG(LogTemp, Warning, TEXT("CON: %d"), Sum);
 	return Sum;
 }
 
@@ -165,6 +192,12 @@ int AFighter::GetTotalIntelligence()
 	return Sum;
 }
 
+float AFighter::GetMaxHealth()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Max HP: %f"), GetTotalConstitution() * 20.0F);
+	return GetTotalConstitution() * 20.0F;
+}
+
 void AFighter::Attack()
 {
 	UZombieAnimInstance* AnimInstance = Cast<UZombieAnimInstance>(HeadMesh->GetAnimInstance());
@@ -176,13 +209,77 @@ void AFighter::Attack()
 
 void AFighter::SetEnableWeaponOverlap(bool InNewEnable)
 {
-	if (InNewEnable)
+	if (InNewEnable && RightArmMesh->BodyPartHealth > 0.0F)
 	{
 		WeaponMesh->SetGenerateOverlapEvents(true);
 	}
 	else
 	{
 		WeaponMesh->SetGenerateOverlapEvents(false);
+	}
+}
+
+void AFighter::DealDamage(AFighter * OtherFighter)
+{
+	float BaseDamage = 0.0;
+	if (RightArmMesh->BodyPartHealth > 0.0F)
+	{
+		BaseDamage = WeaponData->BaseDamage;
+	}
+	float StrengthBonus = GetTotalStrength();
+	float Fluctuation = FMath::FRandRange(-5.0F, 5.0F);
+	float TotalDamage = FMath::Clamp(BaseDamage + StrengthBonus + Fluctuation, 1.0F, FLT_MAX);
+	EDamageResult DamageResult = OtherFighter->ReceiveDamage(TotalDamage);
+	if (DamageResult == EDamageResult::DR_LethalDamage)
+	{
+		AFighterController* FighterController = Cast<AFighterController>(GetController());
+		if (FighterController)
+		{
+			FighterController->NotifyOpponentDied();
+		}
+	}
+}
+
+EDamageResult AFighter::ReceiveDamage(float InAmount)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Health: %f Damage: %f"), Health, InAmount);
+	Health -= InAmount;
+	ReceiveDamageToRandomPart(InAmount);
+	if (Health <= 0.0F)
+	{
+		RootComponent->SetVisibility(false, true);
+		AFighterController* FighterController = Cast<AFighterController>(GetController());
+		if (FighterController)
+		{
+			FighterController->SetOpponent(nullptr);
+		}
+		return EDamageResult::DR_LethalDamage;
+	}
+	return EDamageResult::DR_DamageDealt;
+}
+
+void AFighter::ReceiveDamageToRandomPart(float InAmount)
+{
+	TArray<UBodyPartMeshComponent*> PendingParts;
+	for (int i = 0; i < 3; i++)
+	{
+		if (BodyParts[i]->BodyPartHealth > 0.0F)
+		{
+			PendingParts.Add(BodyParts[i]);
+		}
+	}
+	if (PendingParts.Num() > 0)
+	{
+		int RandPart = FMath::RandRange(0, PendingParts.Num() - 1);
+		float HealthLeft = PendingParts[RandPart]->ReceiveDamage(InAmount);
+		if (HealthLeft <= 0.0F)
+		{
+			PendingParts[RandPart]->SetVisibility(false);
+			if (PendingParts[RandPart] == RightArmMesh)
+			{
+				WeaponMesh->SetVisibility(false);
+			}
+		}
 	}
 }
 

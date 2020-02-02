@@ -2,3 +2,8 @@
 
 
 #include "NecromancyTypes.h"
+#include "BodyPartData.h"
+
+FBodyPart::FBodyPart(UBodyPartData * InData) : Data(InData), Health(InData->BodyPartHealth)
+{
+}

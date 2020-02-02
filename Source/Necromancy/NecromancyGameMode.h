@@ -13,6 +13,24 @@ class ANecromancyGameMode : public AGameModeBase
 
 public:
 	ANecromancyGameMode(const FObjectInitializer &ObjInitializer);
+
+public:
+
+	UPROPERTY(EditAnywhere, Category = "Body Parts")
+	TArray<class UBodyPartData*> StartingBodyParts;
+
+	UPROPERTY(EditAnywhere, Category = "Body Parts")
+	class UWeaponData* StartingWeapon;
+
+	TArray<class AFighter*> Fighters;
+	TArray<FTransform> FighterTransforms;
+
+protected:
+	virtual void BeginPlay() override;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Necromancy")
+	void StartFight(class ANecromancerController* Necro);
 };
 
 
