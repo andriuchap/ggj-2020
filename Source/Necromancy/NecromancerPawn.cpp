@@ -39,7 +39,10 @@ FBodyPart ANecromancerPawn::GetBodyPart(EBodyPartSlot InSlot)
 	ANecromancerController* NecroController = Cast<ANecromancerController>(GetController());
 	if (NecroController)
 	{
-		return NecroController->EquppedParts[InSlot];
+		if (NecroController->EquippedParts.Contains(InSlot))
+		{
+			return NecroController->EquippedParts[InSlot];
+		}
 	}
 	return FBodyPart();
 }

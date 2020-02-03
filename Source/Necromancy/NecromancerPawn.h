@@ -28,7 +28,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Necromancer")
-		void RefreshZombieAppearance(const FBodyPart &EquippedPart);
+		void RefreshZombieAppearance(EBodyPartSlot InSlot);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Necromancer")
 	FBodyPart GetBodyPart(EBodyPartSlot InSlot);

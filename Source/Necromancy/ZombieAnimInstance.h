@@ -20,6 +20,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Zombie")
 	TArray<class UAnimMontage*> AttackAnimations;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Zombie")
+	UAnimMontage* DeathAnimation;
+
 public:
 	void StartAttack();
+
+	void Die();
 };

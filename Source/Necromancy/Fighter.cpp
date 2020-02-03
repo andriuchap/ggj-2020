@@ -96,6 +96,7 @@ void AFighter::WeaponBeginOverlap(UPrimitiveComponent * OverlappedComponent, AAc
 		AFighter* OtherFighter = Cast<AFighter>(OtherActor);
 		if (OtherFighter)
 		{
+			OnEnemyHit(SweepResult);
 			DealDamage(OtherFighter);
 		}
 	}
@@ -230,14 +231,6 @@ void AFighter::DealDamage(AFighter * OtherFighter)
 	float Fluctuation = FMath::FRandRange(-5.0F, 5.0F);
 	float TotalDamage = FMath::Clamp(BaseDamage + StrengthBonus + Fluctuation, 1.0F, FLT_MAX);
 	EDamageResult DamageResult = OtherFighter->ReceiveDamage(TotalDamage);
-	if (DamageResult == EDamageResult::DR_LethalDamage)
-	{
-		AFighterController* FighterController = Cast<AFighterController>(GetController());
-		if (FighterController)
-		{
-			FighterController->NotifyOpponentDied();
-		}
-	}
 }
 
 EDamageResult AFighter::ReceiveDamage(float InAmount)
@@ -247,12 +240,13 @@ EDamageResult AFighter::ReceiveDamage(float InAmount)
 	ReceiveDamageToRandomPart(InAmount);
 	if (Health <= 0.0F)
 	{
-		RootComponent->SetVisibility(false, true);
-		AFighterController* FighterController = Cast<AFighterController>(GetController());
-		if (FighterController)
+		//RootComponent->SetVisibility(false, true);
+		UZombieAnimInstance* AnimInst = Cast<UZombieAnimInstance>(HeadMesh->GetAnimInstance());
+		if (AnimInst)
 		{
-			FighterController->SetOpponent(nullptr);
+			AnimInst->Die();
 		}
+		OnFighterDied.Broadcast(this);
 		return EDamageResult::DR_LethalDamage;
 	}
 	return EDamageResult::DR_DamageDealt;

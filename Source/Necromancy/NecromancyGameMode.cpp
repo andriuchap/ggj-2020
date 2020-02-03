@@ -4,6 +4,7 @@
 #include "NecromancyHUD.h"
 #include "NecromancyCharacter.h"
 #include "NecromancerController.h"
+#include "NecromancerPawn.h"
 #include "UObject/ConstructorHelpers.h"
 #include "EngineUtils.h"
 #include "Fighter.h"
@@ -27,6 +28,7 @@ void ANecromancyGameMode::BeginPlay()
 	{
 		AFighter* Fighter = *Itr;
 		Fighters.Add(Fighter);
+		Fighter->OnFighterDied.AddUObject(this, &ANecromancyGameMode::OnFighterDied);
 		FighterTransforms.Add(Fighter->GetTransform());
 	}
 }
@@ -37,13 +39,13 @@ void ANecromancyGameMode::StartFight(ANecromancerController* Necro)
 	{
 		Fighters[i]->SetActorTransform(FighterTransforms[i]);
 	}
-	int RandFighter = FMath::RandRange(0, 1);
+	PlayerFighter = FMath::RandRange(0, 1);
 
 	TArray<EBodyPartSlot> Keys;
-	Necro->EquppedParts.GetKeys(Keys);
+	Necro->EquippedParts.GetKeys(Keys);
 	for (int i = 0; i < Keys.Num(); i++)
 	{
-		Fighters[RandFighter]->SetPart(Necro->EquppedParts[Keys[i]]);
+		Fighters[PlayerFighter]->SetPart(Necro->EquippedParts[Keys[i]]);
 	}
 
 	for (TActorIterator<AObserverPawn> Itr(GetWorld()); Itr; ++Itr)
@@ -60,4 +62,21 @@ void ANecromancyGameMode::StartFight(ANecromancerController* Necro)
 			FighterController->SetOpponent(Fighters[1 - i]);
 		}
 	}
+}
+
+void ANecromancyGameMode::OnFighterDied(AFighter * Fighter)
+{
+	/*ANecromancerController* NecroController = nullptr;
+	for (TActorIterator<ANecromancerController> Itr(GetWorld()); Itr; ++Itr)
+	{
+		NecroController = *Itr;
+	}
+	if (NecroController)
+	{
+		NecroController->TransferFighterData(Fighters[PlayerFighter]);
+		for (TActorIterator<ANecromancerPawn> Itr(GetWorld()); Itr; ++Itr)
+		{
+			NecroController->Possess(*Itr);
+		}
+	}*/
 }

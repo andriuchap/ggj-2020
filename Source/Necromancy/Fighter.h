@@ -7,6 +7,8 @@
 #include "NecromancyTypes.h"
 #include "Fighter.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FFighterDiedDelegate, AFighter*);
+
 UCLASS()
 class NECROMANCY_API AFighter : public ACharacter
 {
@@ -16,7 +18,7 @@ public:
 	// Sets default values for this character's properties
 	AFighter(const FObjectInitializer &ObjInitializer);
 
-protected:
+public:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Body parts")
 		class UBodyPartMeshComponent* HeadMesh;
 
@@ -47,8 +49,14 @@ protected:
 	UFUNCTION()
 	void WeaponBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-private:
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnEnemyHit(const FHitResult& Hit);
+
+public:
 	float Health;
+
+public:
+	FFighterDiedDelegate OnFighterDied;
 
 public:	
 	// Called every frame
